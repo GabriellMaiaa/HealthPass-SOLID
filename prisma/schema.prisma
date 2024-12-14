@@ -11,12 +11,40 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-
- 
 }
  model User {
   id String @id @default(uuid()) //Usamos o uuid por mais segurança
   name String
   email String @unique //Um @ serve para alterar o campo com propriedades
+  password_hash String  //Aqui vamos criar um Hash a partir da criação da senha
+  created_at DateTime @default(now())
+
+  checkIns CheckIn[] // Aqui mostra a config de nossa Key, que UM USUÁRIO pode ter VARIOS CHECK INS
+
     @@map("users") // Aqui vai definir o nome da tabela com esses @@.
+  }
+
+  model CheckIn {
+    id String @id @default(uuid())
+    created_at DateTime @default(now())
+    validated_at DateTime? // Nesse campo vou validar se foi feito o check in e quando foi validado
+    
+    user User @relation(fields: [user_id], references: [id]) //O PRISMA aqui cria nossa chave de relação com USER
+    user_id String // Se o usuário sempre vai fazer o check in, aqui preciso criar uma chave
+    
+    gym Gym @relation(fields: [gym_id], references: [id]) //O PRISMA aqui cria nossa chave de relação com USER
+    gym_id String 
+
+    @@map("check_ins")
+  }
+  model Gym {
+    id String @id @default(uuid())
+    name String
+    description String?
+    phone String?
+    latitude Decimal
+    longitude Decimal
+    checkIn CheckIn[] // Uma gym pode ter vários checkIns
+
+    @@map("gyms")
   }
