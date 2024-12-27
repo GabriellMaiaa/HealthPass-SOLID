@@ -11,22 +11,16 @@ interface RegisterUseCaseRequest {
 // Os services contém ações que SEMPRE ACONTECEM em nossas requisiçoes HTTP
 
 export class RegisterUseCase {
-  constructor(private usersRepository: any) {}
+  constructor(private usersRepository: PrismaUsersRepository) {}
   async execute({ name, email, password }: RegisterUseCaseRequest) {
     //metodo execute,usando a inversão de dependecias
     const password_hash = await hash(password, 4); // O 2 parametro se refere a quantas vezzes vai gerar uma senha hash a partir da nossa
 
-    const userWithSameEmail = await prisma.user.findUnique({
-      where: {
-        email,
-      },
-    });
+    const userWithSameEmail = await this.usersRepository.findByEmail(email);
     if (userWithSameEmail) {
       throw new Error("This email already exist!");
     }
-
-    const prismaUsersRepository = new PrismaUsersRepository();
-    await prismaUsersRepository.create({
+    await this.usersRepository.create({
       name,
       email,
       password_hash,

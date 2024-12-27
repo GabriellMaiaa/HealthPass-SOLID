@@ -13,8 +13,8 @@ export async function register(req: FastifyRequest, res: FastifyReply) {
   });
   const { name, email, password } = registerBodySchema.parse(req.body);
   try {
-    const prismaUsersRepository = new PrismaUsersRepository();
-    const registerUseCase = new RegisterUseCase(prismaUsersRepository);
+    const usersRepository = new PrismaUsersRepository(); //Chamando nossos repository, tiramos basicamente tudo do prisma de dentro do controller
+    const registerUseCase = new RegisterUseCase(usersRepository);
 
     await registerUseCase.execute({
       // Chamada de nosso service
