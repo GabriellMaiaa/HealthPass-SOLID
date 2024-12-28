@@ -10,7 +10,9 @@ export const app = fastify();
 app.register(appRoutes);
 
 app.setErrorHandler((error, req, res) => {
+  // Metodo para criar erros globais
   if (error instanceof ZodError) {
+    // Para pegar erros de validação do ZOD
     return res
       .status(400)
       .send({ message: "Validantion error", issues: error.format() }); //Aqui mostramos o erro globalmente com o zod
